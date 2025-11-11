@@ -24,8 +24,10 @@ model User {
   profileImage String?
   coverImage   String?
   posts        Post[]
-  Comment      Comment[]
-  Like         Like[]
+  comments     Comment[]
+  likes        Like[]
+  requesters   Friend[]  @relation("requester")
+  receivers    Friend[]  @relation("receiver")
 }
 
 model Post {
@@ -36,8 +38,8 @@ model Post {
   totalLike Int       @default(0)
   userId    Int
   user      User      @relation(fields: [userId], references: [id])
-  Comment   Comment[]
-  Like      Like[]
+  comments  Comment[]
+  likes     Like[]
 }
 
 model Comment {
@@ -56,4 +58,19 @@ model Like {
   user   User @relation(fields: [userId], references: [id])
   postId Int
   post   Post @relation(fields: [postId], references: [id])
+}
+
+model Friend {
+  id          Int          @id @default(autoincrement())
+  status      FriendStatus
+  createdAt   DateTime     @default(now())
+  requesterId Int
+  requester   User         @relation("requester", fields: [requesterId], references: [id])
+  receiverId  Int
+  receiver    User         @relation("receiver", fields: [receiverId], references: [id])
+}
+
+enum FriendStatus {
+  ACCEPTED
+  PENDING
 }
