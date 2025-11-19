@@ -1,0 +1,15 @@
+API DOC
+
+REGISTER
+POST /auth/register
+BODY firstName, lastName, emailOrMobile, passsword, confirmPassword
+RESPONSE 
+201 { accessToken : String }
+400 { message : String }
+500 { message : String }
+
+
+LOGIN
+POST /user/LOGIN
+req.body
+RESPONSE 200, 400
