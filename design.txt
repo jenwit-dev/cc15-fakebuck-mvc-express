@@ -7,9 +7,14 @@ RESPONSE
 201 { accessToken : String }
 400 { message : String }
 500 { message : String }
-
+// In todolist-lab-backend, P Earth only sends accessToken via only feature login
+// In cc15-fakebuck-mvc-express, P Earth sends accessToken via both register and login features, so you will be logged in automatically when you are done registering
 
 LOGIN
-POST /user/LOGIN
-req.body
-RESPONSE 200, 400
+POST /auth/login
+BODY emailOrMobile, password
+RESPONSE 
+200 { accessToken : String }
+400 { message : String }
+500 { message : String }
+
