@@ -4,7 +4,8 @@ const express = require("express");
 // const authController = require("../controllers/auth-controller");
 
 // Name Export 2 destructuring the exported object right away
-const { register, login } = require("../controllers/auth-controller");
+const { register, login, getMe } = require("../controllers/auth-controller");
+const authenticateMiddleware = require("../middlewares/authenticate");
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ const router = express.Router();
 // but if you destructure right away at the top so we can use fn register and login directly
 router.post("/register", register);
 router.post("/login", login);
+router.get("/me", authenticateMiddleware, getMe);
 
 module.exports = router;
