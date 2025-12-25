@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
     cb(null, "public");
   },
   filename: (req, file, cb) => {
-    console.log(file);
+    // console.log(file);
     const split = file.originalname.split(".");
     cb(
       null,
@@ -29,5 +29,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+// upload returns uploadMiddleware fn
+// so that it can use methods like uploadMiddleware.single("qwerty")
 
 module.exports = upload;

@@ -18,6 +18,8 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(rateLimitMiddleware);
 app.use(express.json());
+// on browser, try http://localhost:8888/image_name.jpg to access the image in public folder using express.static
+app.use(express.static("public"));
 
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
