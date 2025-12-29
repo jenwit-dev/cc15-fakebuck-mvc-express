@@ -4,6 +4,7 @@ const createError = require("../utils/create-error");
 // const cloudinary = require("../config/cloudinary");
 const { upload } = require("../utils/cloudinary-service");
 const prisma = require("../models/prisma");
+const { checkUserIdSchema } = require("../validators/user-validator");
 
 exports.updateProfile = async (req, res, next) => {
   try {
@@ -16,8 +17,11 @@ exports.updateProfile = async (req, res, next) => {
       return next(createError("Profile image or cover image is required"));
     }
 
+    const response = {};
+
     if (req.files.profileImage) {
       const url = await upload(req.files.profileImage[0].path);
+      response.profileImage = url;
       // console.log(result);
       await prisma.user.update({
         data: {
@@ -31,6 +35,7 @@ exports.updateProfile = async (req, res, next) => {
 
     if (req.files.coverImage) {
       const url = await upload(req.files.coverImage[0].path);
+      response.coverImage = url;
       await prisma.user.update({
         data: {
           coverImage: url,
@@ -41,9 +46,7 @@ exports.updateProfile = async (req, res, next) => {
       });
     }
 
-    res
-      .status(200)
-      .json({ message: "Update profile image or cover image successfully" });
+    res.status(200).json(response);
   } catch (err) {
     next(err);
   } finally {
@@ -54,5 +57,34 @@ exports.updateProfile = async (req, res, next) => {
     if (req.files.coverImage) {
       fs.unlink(req.files.coverImage[0].path);
     }
+  }
+};
+
+exports.getUserById = async (req, res, next) => {
+  try {
+    const { error } = checkUserIdSchema.validate(req.params);
+    if (error) {
+      return next(error);
+    }
+
+    const userId = +req.params.userId;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    // let status = null;
+    // let friends = null;
+    if (user) {
+      delete user.password;
+      //   status = await getTargetUserStatusWithAuthUser(userId, req.user.id);
+      //   friends = await getTargetUserFriends(userId);
+    }
+
+    // res.status(200).json({ user, status, friends });
+    res.status(200).json({ user });
+  } catch (err) {
+    next(err);
   }
 };

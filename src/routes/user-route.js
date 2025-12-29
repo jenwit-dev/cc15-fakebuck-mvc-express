@@ -1,6 +1,9 @@
 const express = require("express");
 
-const { updateProfile } = require("../controllers/user-controller");
+const {
+  updateProfile,
+  getUserById,
+} = require("../controllers/user-controller");
 const authenticateMiddleware = require("../middlewares/authenticate");
 const uploadMiddleware = require("../middlewares/upload");
 
@@ -17,5 +20,7 @@ router.patch(
   ]),
   updateProfile
 );
+
+router.get("/:userId", authenticateMiddleware, getUserById);
 
 module.exports = router;
