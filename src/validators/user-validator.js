@@ -11,3 +11,9 @@ const checkReceiverIdSchema = Joi.object({
 });
 
 exports.checkReceiverIdSchema = checkReceiverIdSchema;
+
+const checkRequesterIdSchema = Joi.object({
+  requesterId: Joi.number().integer().positive().required(),
+});
+
+exports.checkRequesterIdSchema = checkRequesterIdSchema;

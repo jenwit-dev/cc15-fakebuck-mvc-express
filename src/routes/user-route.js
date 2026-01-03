@@ -21,6 +21,9 @@ router.patch(
   updateProfile
 );
 
+// In React, it's http://localhost:5173/profile/:profileId
+// see ProfilePage.jsx, const { profileId } = useParams()
+// In Express, it's http://localhost:8888/user/:userId
 router.get("/:userId", authenticateMiddleware, getUserById);
 
 module.exports = router;

@@ -74,3 +74,5 @@ enum FriendStatus {
   ACCEPTED
   PENDING
 }
+
+// pink text with or without array is just a relation between two models, not an actual column in mysql database
