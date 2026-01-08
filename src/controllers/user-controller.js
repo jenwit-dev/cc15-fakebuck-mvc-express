@@ -43,6 +43,81 @@ const getTargetUserStatusWithAuthUser = async (targetUserId, authUserId) => {
   return RECEIVER;
 };
 
+const getTargetUserFriends = async (targetUserId) => {
+  // STATUS ACCEPTED AND (REQUESTER_ID = targetUserId OR RECEIVER_ID = targetUserId)
+  const relationships = await prisma.friend.findMany({
+    // 1 when using only where, it will return normal 5 key value pairs only (friend_id, friend_status, friend_createdAt, friend_requesterId, friend_receiverId)
+    where: {
+      status: STATUS_ACCEPTED,
+      OR: [{ requesterId: targetUserId }, { receiverId: targetUserId }],
+    },
+
+    // 2 when using only include, it will return normal 5 key value pairs AND all fields of requester and receiver
+    // requester and receiver are NOT actual fields in friend table, they are relation lines
+    // In friend table, there are only requesterId and receiverId fields, no requester and receiver fields
+    // Moreover, there are no entities/tables/models called requester and receiver in fakebuck ER diagram
+    // they are just aliases for user table/model/entity
+    // In prisma schema, in both user and friend models : @relation("requester") and @relation("receiver")
+    // include: {
+    //   requester: true,
+    //   receiver: true,
+    // },
+
+    // 3 when using only select, it will select only requester and receiver data (excluding normal 5 key value pairs)
+    // we don't need to use include here because we only need requester and receiver data
+    // we can use select to get only requester and receiver data
+    // select: {
+    //   requester: true, // @relation("requester")
+    //   receiver: true, // @relation("receiver")
+    // },
+
+    // 4 when using nested select or double select without include
+    // but if we want to select specific fields of requester and receiver relations, we can use nested select, since we want to ignore password field in user table
+    select: {
+      // unnecessary to select these fields
+      // id: true,
+      // status: true,
+      // createdAt: true,
+      // requesterId: true,
+      // receiverId: true,
+      requester: {
+        // select requester info from user table, @relation("requester"), 2 special relation lines in prisma schema
+        select: {
+          // use nested select to second select to exclude password field from user table for relation name requester
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          mobile: true,
+          profileImage: true,
+          coverImage: true,
+        },
+      },
+      receiver: {
+        // select receiver info from user table, @relation("receiver"), 2 special relation lines in prisma schema
+        select: {
+          // use nested select to second select to exclude password field from user table for relation name receiver
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          mobile: true,
+          profileImage: true,
+          coverImage: true,
+        },
+      },
+    },
+  });
+  // console.log(relationships);
+  const friends = relationships.map((relationship) => {
+    return relationship.requester.id === targetUserId
+      ? relationship.receiver
+      : relationship.requester;
+  });
+  // console.log(friends);
+  return friends;
+};
+
 exports.updateProfile = async (req, res, next) => {
   try {
     // the image file is in object req.file since it's uploadMiddlewre.single("qwerty")
@@ -112,13 +187,13 @@ exports.getUserById = async (req, res, next) => {
     });
 
     let status = null;
-    // let friends = null;
+    let friends = null;
     if (user) {
       delete user.password;
       // auth user id  : req.user.id (the currently logged in user that you get from authenticateMiddleware)
-      // userId (userId in Express or profileId in React is the user that you see on the profile page)
+      // userId (userId in Express (only API Get user by id) or profileId in React ( const { profileId } = useParams() ) is the user that you see on the profile page )
       status = await getTargetUserStatusWithAuthUser(userId, req.user.id);
-      //   friends = await getTargetUserFriends(userId);
+      friends = await getTargetUserFriends(userId);
     }
 
     // Determine relationship status using if-else statements
@@ -150,10 +225,8 @@ exports.getUserById = async (req, res, next) => {
     //   }
     // }
 
-    // res.status(200).json({ user, status, friends });
-
     res.set("Cache-Control", "no-store"); // Disable caching
-    res.status(200).json({ user, status });
+    res.status(200).json({ user, status, friends });
   } catch (err) {
     next(err);
   }

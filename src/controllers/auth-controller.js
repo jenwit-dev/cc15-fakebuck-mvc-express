@@ -32,6 +32,7 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { value, error } = loginSchema.validate(req.body);
+    // console.log(value);
     if (error) {
       // console.log(error.name); // ValidationError
       // error.statusCode = 400;
