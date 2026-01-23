@@ -119,3 +119,21 @@ RESPONSE
 401 { message: String }
 500 { message: String }
 
+CREATE POST
+POST /post
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+BODY message?, image?
+RESPONSE
+201 { message: String }
+400 { message: String }
+401 { message: String } // TokenExpiredError or JWT error 401 
+500 { message: String }
+
+GET ALL POSTS INCLUDING FRIENDS' POSTS
+GET /post/friend
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+RESPONSE
+200 { posts: [ { id: Number, message: String, image: String, user: { id: Number, firstName: String, ... } } ] }
+400 { message: String }
+401 { message: String } // TokenExpiredError or JWT error 401 
+500 { message: String }

@@ -123,7 +123,7 @@ exports.updateProfile = async (req, res, next) => {
     // the image file is in object req.file since it's uploadMiddlewre.single("qwerty")
     // console.log(req.file); // returns object req.file for only method .single ex. uploadMiddleware.single("qwerty")
     // console.log(req.files); // returns array req.fileS for method .array since it's one field and has many fileS like uploadMiddleware.array("qwerty")
-    // console.log(req.files); // returns object req.fileS that contains array of objects for method .fields
+    // console.log(req.files); // returns object req.fileS that contains array of objects in each fieldname for method .fields
 
     if (!req.files) {
       return next(createError("Profile image or cover image is required"));
