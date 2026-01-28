@@ -75,6 +75,22 @@ exports.getAllPostIncludeFriendPost = async (req, res, next) => {
             profileImage: true,
           },
         },
+        likes: {
+          // select user select
+          select: {
+            // user: {
+            // select user info from user table, one relation line in prisma schema
+            //   select: {
+            // use nested select to second select only specific needed fields
+            //     id: true,
+            //     firstName: true,
+            //     lastname: true,
+            //   },
+            // },
+
+            userId: true,
+          },
+        },
       },
     });
 
