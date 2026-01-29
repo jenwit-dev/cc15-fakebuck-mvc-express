@@ -41,9 +41,26 @@ exports.createPost = async (req, res, next) => {
       data.message = message;
     }
 
-    await prisma.post.create({ data });
+    const post = await prisma.post.create({
+      data,
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profileImage: true,
+          },
+        },
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
 
-    res.status(201).json({ message: "post created" });
+    res.status(201).json({ message: "post created", post });
   } catch (err) {
     next(err);
   } finally {
