@@ -5,6 +5,7 @@ const uploadMiddleware = require("../middlewares/upload");
 const {
   createPost,
   getAllPostIncludeFriendPost,
+  deletePost,
 } = require("../controllers/post-controller");
 const { toggleLike } = require("../controllers/like-controller");
 
@@ -20,5 +21,7 @@ router.post(
 router.get("/friend", authenticateMiddleware, getAllPostIncludeFriendPost);
 
 router.post("/:postId/like", authenticateMiddleware, toggleLike);
+
+router.delete("/:postId", authenticateMiddleware, deletePost);
 
 module.exports = router;
